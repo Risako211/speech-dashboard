@@ -4,6 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Risako's Speech Lesson Dashboard</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#F472A8">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Speech">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&family=Poppins:wght@400;500;600;700;800&display=swap');
@@ -325,7 +334,7 @@ const CHART_COLORS=['#F472A8','#B8C8E2','#E45A93','#8EAED4','#C77DBA','#D4A0C0',
 let entries=JSON.parse(localStorage.getItem('speech_entries_v4')||'[]');
 if(entries.length===0){
   entries=[
-    {lesson:'1-1',date:'2026-03-11',ratings:{PLOT:3,STORY:4,FACT:2,CORE:4,'声':4,'流暢さ':3,'構成力':3},feedback:'初回診断レッスン。Content Skill 偏差値58。Delivery Skill A+。声の強さとストーリーテリングが強み。FACTの活用とPLOTの構成力が課題。',memo:'初めてのレッスン。自分の強みと弱みが数値化されてわかりやすかった。',tags:['強み: STORY','強み: 声','課題: FACT','課題: PLOT']},
+    {lesson:'1-1',date:'2026-03-11',ratings:{PLOT:3,STORY:4,FACT:2,CORE:4,'声':4,'流暢さ':3,'構成力':3},feedback:'初回診断レッスン。Content Skill 偏差値58。Delivery Skill A+。声の強さとストーリーテリングが強み。FACTの活用とPLOTの構成力が課題。',memo:'<b>・話の三原則</b>\n特に三つ目の「話し言葉」の意識を持つが全く意識できてなかったので、これから頭に留めていきたいと思った\n\n<b>・腹式呼吸</b>\nできていると思ったが、意外と日常では意識できていないと感じた。「吐き切る」を意識し、オンラインMTGなどでも腹式呼吸をして堂々と見えるようにしていきたい。腹式呼吸ができているときは、肩が上下しない\n\n<b>・ファクト</b>\n一番課題の部分だったので体系的に学べてありがたかった。まずはファクトを使うということを意識した上で、どんなファクトを使うのか？ファクトをより具体化するには？というところに気をつけ、ファクトを自分の伝える力の武器としていきたい。ファクトは自分が経験していないことでも説得力を持たせるのに使えることも学べた',tags:['強み: STORY','強み: 声','課題: FACT','課題: 腹式呼吸','学び: 話し言葉の意識']},
     {lesson:'1-2',date:'2026-03-18',ratings:{PLOT:3,STORY:4,FACT:2,CORE:3,'声':4,'流暢さ':2,'構成力':3},feedback:'<b>①話し方の引き出しを増やす</b>\n平さんはすでにハキハキと言葉を粒立てて話すことができており、それが強みです。今後は対象者やシチュエーションに合わせて話し方をコントロールできる力をつけていきましょう。まずは滑らかに弧を描くように、言葉がブツっと切れないで話せるように練習をしましょう！\n\n<b>②目的から逆算する習慣</b>\n常に話す目的を考え、その目的の達成にはどんなファクト、ストーリーが必要か逆算する考え方を持ってみましょう。目的の達成のために返ってノイズになってしまう情報は勇気を持って割愛してみてください。',memo:'なめらかに読む＝流暢さが新しい課題。ファクト選びは「聞き手の目的」から逆算する必要がある。',tags:['強み: ハキハキ','課題: 流暢さ','課題: 目的から逆算','課題: FACT選び']}
   ];
   localStorage.setItem('speech_entries_v4',JSON.stringify(entries));
@@ -469,6 +478,7 @@ el.querySelectorAll('.feedback-entry').forEach(x=>{if(x.querySelector('.lesson-t
 function refreshAll(){renderLessonTrack();renderContentScores();renderDeliveryScores();renderFeedbackLog();renderInsights();renderFormInputs();if(radarChart){radarChart.data=getRadarData();radarChart.update();}}
 
 document.addEventListener('DOMContentLoaded',()=>{renderLessonTrack();renderContentScores();renderDeliveryScores();createRadarChart();renderFeedbackLog();renderInsights();renderFormInputs();});
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js');}
 </script>
 </body>
 </html>
