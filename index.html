@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Risako's Speech Lesson Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&family=Poppins:wght@400;500;600;700;800&display=swap');
+
+  :root {
+    --pink-bg: #F5C0CA;
+    --pink-light: #FADCE2;
+    --pink-pale: #FFF0F3;
+    --blue-accent: #B8C8E2;
+    --blue-light: #D4DFEF;
+    --blue-pale: #EBF0F8;
+    --hot-pink: #F472A8;
+    --hot-pink-deep: #E45A93;
+    --text-dark: #3D2836;
+    --text-mid: #6B5060;
+    --text-light: #9A8490;
+    --white: #FFFFFF;
+    --card-bg: rgba(255,255,255,0.78);
+    --border: rgba(244,114,168,0.15);
+    --shadow: 0 2px 20px rgba(61,40,54,0.06);
+    --blonde: #FFD966;
+    --blonde-dark: #E8C44A;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Zen Maru Gothic','Poppins',sans-serif;background:linear-gradient(170deg,var(--pink-light) 0%,var(--pink-pale) 40%,var(--blue-pale) 100%);color:var(--text-dark);line-height:1.6;min-height:100vh;}
+
+  /* ===== HERO ===== */
+  .hero{position:relative;min-height:340px;overflow:hidden;display:flex;align-items:center;}
+  .hero-bg{position:absolute;inset:0;background:url('https://img.youtube.com/vi/18uDutylDa4/maxresdefault.jpg') center 20%/cover no-repeat;filter:saturate(0.3);}
+  .hero-overlay{position:absolute;inset:0;background:linear-gradient(135deg,rgba(244,114,168,0.6) 0%,rgba(184,200,226,0.55) 50%,rgba(228,90,147,0.5) 100%);}
+  .hero-content{position:relative;z-index:2;padding:48px 32px 40px;max-width:1200px;margin:0 auto;width:100%;display:flex;justify-content:space-between;align-items:center;gap:24px;}
+  .hero-text h1{font-family:'Poppins',sans-serif;font-size:32px;font-weight:800;color:var(--white);letter-spacing:0.5px;line-height:1.2;text-shadow:0 2px 16px rgba(61,40,54,0.2);}
+  .hero-text .sub{color:rgba(255,255,255,0.9);font-size:13px;margin-top:6px;letter-spacing:0.5px;}
+  .hero-text .quote{color:rgba(255,255,255,0.88);font-size:12px;font-style:italic;margin-top:12px;max-width:420px;line-height:1.7;}
+  .hero-links{margin-top:16px;display:flex;gap:8px;flex-wrap:wrap;}
+  .hero-link{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.2);backdrop-filter:blur(8px);color:#fff;text-decoration:none;font-size:12px;font-weight:600;padding:8px 16px;border-radius:20px;border:1px solid rgba(255,255,255,0.3);transition:all 0.25s;}
+  .hero-link:hover{background:rgba(255,255,255,0.35);transform:translateY(-1px);}
+  .progress-badge{background:var(--white);color:var(--hot-pink);padding:10px 24px;border-radius:24px;font-family:'Poppins',sans-serif;font-weight:700;font-size:14px;box-shadow:0 4px 20px rgba(244,114,168,0.25);white-space:nowrap;}
+
+  /* ===== MAIN ===== */
+  .main{max-width:1200px;margin:0 auto;padding:24px;}
+
+  /* ===== THREE PRINCIPLES ===== */
+  .principles{background:var(--card-bg);backdrop-filter:blur(12px);border-radius:16px;padding:20px 24px;margin-bottom:20px;border:1px solid var(--border);box-shadow:var(--shadow);}
+  .principles-title{font-size:12px;color:var(--hot-pink);margin-bottom:14px;text-transform:uppercase;letter-spacing:2px;font-family:'Poppins',sans-serif;font-weight:600;}
+  .principles-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+  .principle-card{background:linear-gradient(135deg,var(--pink-pale),var(--blue-pale));border-radius:12px;padding:16px;text-align:center;border:1px solid rgba(244,114,168,0.08);transition:transform 0.2s;}
+  .principle-card:hover{transform:translateY(-3px);}
+  .principle-icon{font-size:28px;margin-bottom:6px;display:block;}
+  .principle-num{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,var(--hot-pink),var(--hot-pink-deep));color:#fff;font-size:11px;font-weight:700;font-family:'Poppins',sans-serif;margin-bottom:6px;}
+  .principle-main{font-size:15px;font-weight:700;color:var(--text-dark);margin-bottom:6px;}
+  .principle-sub{font-size:10px;color:var(--text-light);line-height:1.6;}
+
+  /* ===== PROGRESS TRACK ===== */
+  .progress-section{background:var(--card-bg);backdrop-filter:blur(12px);border-radius:16px;padding:20px 24px;margin-bottom:20px;border:1px solid var(--border);box-shadow:var(--shadow);}
+  .section-title{font-size:12px;color:var(--hot-pink);margin-bottom:14px;text-transform:uppercase;letter-spacing:2px;font-family:'Poppins',sans-serif;font-weight:600;}
+  .lesson-track{display:flex;gap:5px;align-items:center;flex-wrap:wrap;}
+  .lesson-dot{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;cursor:pointer;transition:all 0.25s cubic-bezier(.4,0,.2,1);font-family:'Poppins',sans-serif;}
+  .lesson-dot.completed{background:linear-gradient(135deg,var(--hot-pink),var(--hot-pink-deep));color:#fff;box-shadow:0 2px 8px rgba(244,114,168,0.3);}
+  .lesson-dot.current{background:var(--white);color:var(--hot-pink);box-shadow:0 0 0 2.5px var(--hot-pink),0 2px 12px rgba(244,114,168,0.25);}
+  .lesson-dot.future{background:var(--blue-pale);color:var(--text-light);}
+  .lesson-dot:hover{transform:scale(1.12) translateY(-2px);}
+  .unit-label{font-size:10px;color:var(--blue-accent);font-weight:700;margin:0 6px 0 4px;font-family:'Poppins',sans-serif;}
+
+  /* ===== GRID ===== */
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px;}
+
+  /* ===== CARD ===== */
+  .card{background:var(--card-bg);backdrop-filter:blur(12px);border-radius:16px;padding:22px 24px;border:1px solid var(--border);box-shadow:var(--shadow);}
+  .card h3{font-size:12px;color:var(--hot-pink);margin-bottom:16px;text-transform:uppercase;letter-spacing:1.5px;font-family:'Poppins',sans-serif;font-weight:600;display:flex;align-items:center;gap:8px;}
+
+  /* ===== CONTENT SKILL ===== */
+  .score-header{display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:14px;}
+  .total-score{font-size:48px;font-weight:800;font-family:'Poppins',sans-serif;background:linear-gradient(135deg,var(--hot-pink),#C77DBA);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+  .total-score-sub{font-size:13px;color:var(--text-light);}
+  .goal-badge{display:inline-flex;align-items:center;gap:4px;background:linear-gradient(135deg,var(--pink-pale),var(--blue-pale));border:1.5px solid var(--hot-pink);padding:6px 14px;border-radius:20px;font-size:12px;font-weight:700;color:var(--hot-pink);font-family:'Poppins',sans-serif;}
+  .total-grade{font-size:48px;font-weight:800;font-family:'Poppins',sans-serif;background:linear-gradient(135deg,var(--blue-accent),var(--hot-pink));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+
+  .score-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+  .score-item{text-align:center;padding:14px 8px 10px;background:linear-gradient(135deg,var(--pink-pale),var(--blue-pale));border-radius:12px;border:1px solid rgba(244,114,168,0.08);}
+  .score-item .label{font-size:11px;color:var(--hot-pink);text-transform:uppercase;letter-spacing:1px;font-family:'Poppins',sans-serif;font-weight:700;}
+  .score-item .label-ja{font-size:9px;color:var(--text-light);margin-top:1px;font-weight:500;}
+  .score-item .value{font-size:30px;font-weight:700;color:var(--hot-pink);margin:6px 0 2px;font-family:'Poppins',sans-serif;}
+  .score-item .change{font-size:10px;}
+  .score-item .change.up{color:var(--hot-pink);}
+  .score-item .change.down{color:var(--blue-accent);}
+  .score-item .change.neutral{color:var(--text-light);}
+
+  .delivery-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;}
+  .delivery-item{text-align:center;padding:12px 4px;background:linear-gradient(135deg,var(--blue-pale),var(--pink-pale));border-radius:12px;border:1px solid rgba(184,200,226,0.2);}
+  .delivery-item .label{font-size:9px;color:var(--text-light);font-weight:500;}
+  .delivery-item .grade{font-size:24px;font-weight:700;margin:4px 0;font-family:'Poppins',sans-serif;}
+  .grade-s{color:var(--hot-pink);}
+  .grade-a{color:var(--blue-accent);}
+
+  /* ===== CHARTS ===== */
+  .chart-container{position:relative;width:100%;max-width:320px;margin:0 auto;}
+  .tabs{display:flex;gap:6px;margin-bottom:16px;}
+  .tab{padding:6px 18px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;background:var(--pink-pale);color:var(--text-light);border:1px solid var(--border);transition:all 0.2s;font-family:'Poppins',sans-serif;}
+  .tab.active{background:linear-gradient(135deg,var(--hot-pink),var(--hot-pink-deep));color:#fff;border-color:transparent;box-shadow:0 2px 8px rgba(244,114,168,0.3);}
+
+  /* ===== FEEDBACK LOG ===== */
+  .feedback-list{max-height:500px;overflow-y:auto;}
+  .feedback-list::-webkit-scrollbar{width:4px;}
+  .feedback-list::-webkit-scrollbar-thumb{background:var(--pink-bg);border-radius:4px;}
+  .feedback-entry{padding:16px 0;border-bottom:1px solid rgba(244,114,168,0.1);transition:background 0.3s;}
+  .feedback-entry:last-child{border-bottom:none;}
+  .feedback-entry .lesson-tag{display:inline-block;background:linear-gradient(135deg,var(--hot-pink),var(--hot-pink-deep));color:#fff;font-size:10px;padding:3px 12px;border-radius:12px;margin-right:8px;font-family:'Poppins',sans-serif;font-weight:600;}
+  .feedback-entry .date{font-size:11px;color:var(--text-light);}
+  .feedback-entry .content{font-size:13px;margin-top:8px;color:var(--text-mid);line-height:1.8;}
+  .feedback-entry .tags{margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;}
+  .feedback-entry .tag{font-size:10px;padding:3px 10px;border-radius:8px;background:var(--blue-pale);color:#6B8DB5;font-weight:600;}
+  .feedback-entry .tag.issue{background:var(--pink-pale);color:var(--hot-pink);}
+
+  /* ===== FORM ===== */
+  .form-section{background:var(--card-bg);backdrop-filter:blur(12px);border-radius:16px;padding:24px;margin-bottom:20px;border:2px dashed var(--pink-bg);box-shadow:var(--shadow);}
+  .form-section h3{font-size:14px;color:var(--hot-pink);margin-bottom:16px;font-weight:700;}
+  .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+  .form-group{display:flex;flex-direction:column;gap:4px;}
+  .form-group label{font-size:10px;color:var(--text-light);font-weight:600;text-transform:uppercase;letter-spacing:1px;font-family:'Poppins',sans-serif;}
+  .form-group input,.form-group select,.form-group textarea{padding:10px 14px;border:1.5px solid rgba(244,114,168,0.15);border-radius:10px;font-size:13px;font-family:inherit;outline:none;background:var(--white);transition:all 0.2s;}
+  .form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--hot-pink);box-shadow:0 0 0 3px rgba(244,114,168,0.1);}
+  .form-group textarea{resize:vertical;min-height:80px;}
+  .rating-group{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:14px;}
+  .rating-item{display:flex;flex-direction:column;align-items:center;gap:5px;}
+  .rating-item label{font-size:10px;color:var(--text-light);text-align:center;font-weight:500;}
+  .rating-item select{width:56px;text-align:center;padding:6px;border:1.5px solid rgba(244,114,168,0.15);border-radius:8px;font-size:14px;font-weight:700;color:var(--hot-pink);background:var(--white);}
+  .btn{background:linear-gradient(135deg,var(--hot-pink),var(--hot-pink-deep));color:#fff;border:none;padding:11px 28px;border-radius:12px;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.25s;box-shadow:0 3px 12px rgba(244,114,168,0.3);}
+  .btn:hover{transform:translateY(-2px);box-shadow:0 5px 20px rgba(244,114,168,0.4);}
+  .btn-secondary{background:var(--white);color:var(--hot-pink);border:1.5px solid var(--hot-pink);box-shadow:none;}
+  .btn-secondary:hover{background:var(--pink-pale);box-shadow:none;}
+
+  /* ===== BUBBLES-STYLE CHARACTER ===== */
+  .insight-wrap{display:flex;gap:16px;align-items:flex-start;margin-top:14px;}
+  .ppg{flex-shrink:0;width:80px;height:100px;position:relative;}
+  /* Head */
+  .ppg-head{width:60px;height:58px;background:#FFE4D0;border-radius:50%;position:absolute;top:18px;left:10px;border:2.5px solid var(--text-dark);overflow:visible;z-index:2;}
+  /* Big Eyes */
+  .ppg-eye{width:22px;height:26px;background:#fff;border-radius:50%;position:absolute;border:2.5px solid var(--text-dark);}
+  .ppg-eye.l{top:14px;left:4px;}
+  .ppg-eye.r{top:14px;left:28px;}
+  .ppg-iris{width:14px;height:16px;background:#5BA3E6;border-radius:50%;position:absolute;top:5px;left:4px;}
+  .ppg-pupil{width:8px;height:10px;background:var(--text-dark);border-radius:50%;position:absolute;top:3px;left:3px;}
+  .ppg-pupil::after{content:'';width:3px;height:3px;background:#fff;border-radius:50%;position:absolute;top:1px;left:1px;}
+  /* Mouth */
+  .ppg-mouth{width:10px;height:5px;border-bottom:2.5px solid var(--text-dark);border-radius:0 0 10px 10px;position:absolute;top:40px;left:23px;}
+  /* Blush */
+  .ppg-blush{width:10px;height:6px;background:rgba(244,114,168,0.35);border-radius:50%;position:absolute;top:38px;}
+  .ppg-blush.l{left:4px;}
+  .ppg-blush.r{left:44px;}
+  /* Pigtails - Blonde */
+  .ppg-hair-top{width:64px;height:30px;background:var(--blonde);border-radius:32px 32px 0 0;position:absolute;top:10px;left:8px;border:2.5px solid var(--text-dark);border-bottom:none;z-index:3;}
+  .ppg-pigtail{position:absolute;z-index:1;}
+  .ppg-pigtail-ball{width:28px;height:28px;background:var(--blonde);border-radius:50%;border:2.5px solid var(--text-dark);}
+  .ppg-pigtail-stem{width:10px;height:14px;background:var(--blonde);position:absolute;border-left:2.5px solid var(--text-dark);border-right:2.5px solid var(--text-dark);}
+  .ppg-pigtail.l{left:-6px;top:12px;}
+  .ppg-pigtail.l .ppg-pigtail-stem{top:12px;left:9px;}
+  .ppg-pigtail.l .ppg-pigtail-ball{position:relative;top:0;}
+  .ppg-pigtail.r{right:-6px;top:12px;}
+  .ppg-pigtail.r .ppg-pigtail-stem{top:12px;left:9px;}
+  .ppg-pigtail.r .ppg-pigtail-ball{position:relative;top:0;}
+  /* Hair tie */
+  .ppg-tie{width:10px;height:8px;background:#5BA3E6;border-radius:50%;border:1.5px solid var(--text-dark);position:absolute;top:24px;z-index:4;}
+  .ppg-tie.l{left:4px;}
+  .ppg-tie.r{right:4px;}
+  /* Body */
+  .ppg-body{width:30px;height:18px;background:#5BA3E6;border-radius:0 0 15px 15px;position:absolute;top:74px;left:25px;border:2.5px solid var(--text-dark);border-top:none;z-index:1;}
+  .ppg-stripe{width:26px;height:4px;background:rgba(255,255,255,0.5);position:absolute;top:4px;left:2px;border-radius:2px;}
+
+  .insight-bubble{flex:1;background:var(--white);border-radius:16px;padding:16px 18px;font-size:13px;line-height:1.8;color:var(--text-mid);box-shadow:0 2px 12px rgba(244,114,168,0.08);border:1.5px solid var(--border);position:relative;}
+  .insight-bubble::before{content:'';position:absolute;left:-10px;top:24px;width:0;height:0;border:6px solid transparent;border-right-color:var(--white);}
+  .insight-bubble .bubble-title{font-weight:700;font-size:13px;color:var(--hot-pink);margin-bottom:6px;font-family:'Poppins',sans-serif;}
+
+  .insight-simple{background:linear-gradient(135deg,var(--pink-pale),var(--blue-pale));border-radius:12px;padding:16px 18px;margin-top:14px;font-size:13px;line-height:1.8;border:1px solid rgba(244,114,168,0.08);}
+  .insight-simple .title{font-weight:700;font-size:12px;color:var(--hot-pink);margin-bottom:4px;font-family:'Poppins',sans-serif;}
+
+  /* ===== RESPONSIVE ===== */
+  @media(max-width:768px){
+    .hero-content{flex-direction:column;text-align:center;padding:32px 20px;}
+    .hero-text h1{font-size:24px;}
+    .hero-links{justify-content:center;}
+    .grid-2{grid-template-columns:1fr;}
+    .score-grid{grid-template-columns:repeat(2,1fr);}
+    .delivery-grid{grid-template-columns:repeat(3,1fr);}
+    .form-row{grid-template-columns:1fr;}
+    .main{padding:16px;}
+    .principles-grid{grid-template-columns:1fr;}
+    .ppg{width:64px;height:80px;transform:scale(0.8);transform-origin:top left;}
+  }
+  @media(max-width:480px){
+    .hero-text h1{font-size:20px;}
+    .delivery-grid{grid-template-columns:repeat(2,1fr);}
+    .lesson-dot{width:32px;height:32px;font-size:9px;}
+    .score-header{flex-direction:column;gap:8px;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== HERO ===== -->
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <div class="hero-text">
+      <h1>Risako's Speech<br>Lesson Dashboard</h1>
+      <div class="sub">kaeka Speech Training Progress</div>
+      <div class="quote">"In the future, there will be no female leaders. There will just be leaders." — Sheryl Sandberg</div>
+      <div class="hero-links">
+        <a href="https://score.kaeka.jp/exam_review/sW9dDweW4USvJtXlbRxx" target="_blank" class="hero-link">📊 kaeka Score</a>
+        <a href="https://portal.kaeka.jp/" target="_blank" class="hero-link">🏠 kaeka Portal</a>
+      </div>
+    </div>
+    <div class="progress-badge" id="progressBadge">Lesson 2 / 24</div>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- ===== THREE PRINCIPLES ===== -->
+  <div class="principles">
+    <div class="principles-title">話の三原則 — 3 Principles of Speech</div>
+    <div class="principles-grid">
+      <div class="principle-card">
+        <span class="principle-icon">🎯</span>
+        <div class="principle-num">1</div>
+        <div class="principle-main">話す「目的」を明確にする</div>
+        <div class="principle-sub">話すことで実現したいことは何か<br>話すことは手段<br>自分自身が納得できる目的を言語化する</div>
+      </div>
+      <div class="principle-card">
+        <span class="principle-icon">👥</span>
+        <div class="principle-num">2</div>
+        <div class="principle-main">「対象者」を分析する</div>
+        <div class="principle-sub">聞き手の属性・状況・知識量<br>相手の理解レベル<br>聞きたいと思ってくれているか</div>
+      </div>
+      <div class="principle-card">
+        <span class="principle-icon">🗣️</span>
+        <div class="principle-num">3</div>
+        <div class="principle-main">「話し言葉」の意識を持つ</div>
+        <div class="principle-sub">話し言葉＝音声情報　書き言葉＝視覚情報<br>聞き手はすべてを記憶していない<br>時間制約・1文の長さ</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== PROGRESS TRACK ===== -->
+  <div class="progress-section">
+    <div class="section-title">Lesson Progress</div>
+    <div class="lesson-track" id="lessonTrack"></div>
+  </div>
+
+  <!-- ===== SCORES ===== -->
+  <div class="grid-2">
+    <div class="card">
+      <h3>Content Skill（初期診断）</h3>
+      <div class="score-header">
+        <div style="text-align:center;"><span class="total-score">58</span><span class="total-score-sub">（偏差値）</span></div>
+        <div class="goal-badge"><span>→</span> Goal: <strong>70</strong></div>
+      </div>
+      <div class="score-grid" id="contentScores"></div>
+    </div>
+    <div class="card">
+      <h3>Delivery Skill（初期診断）</h3>
+      <div style="text-align:center;margin-bottom:14px;"><span class="total-grade">A+</span></div>
+      <div class="delivery-grid" id="deliveryScores"></div>
+    </div>
+  </div>
+
+  <!-- ===== RADAR ===== -->
+  <div class="card" style="margin-bottom:20px;">
+    <h3>Skill Radar</h3>
+    <div class="tabs">
+      <button class="tab active" onclick="switchRadar('content')">Content</button>
+      <button class="tab" onclick="switchRadar('delivery')">Delivery</button>
+    </div>
+    <div class="chart-container" style="max-width:380px;"><canvas id="radarChart"></canvas></div>
+  </div>
+
+  <!-- ===== FORM ===== -->
+  <div class="form-section">
+    <h3>レッスン記録を追加</h3>
+    <div class="form-row">
+      <div class="form-group"><label>Lesson</label><select id="inputLesson"></select></div>
+      <div class="form-group"><label>Date</label><input type="date" id="inputDate" value="2026-03-18"></div>
+    </div>
+    <div class="form-group" style="margin-bottom:12px;"><label>Self Rating (1-5)</label></div>
+    <div class="rating-group" id="ratingInputs"></div>
+    <div class="form-group" style="margin-bottom:12px;"><label>Feedback</label><textarea id="inputFeedback" placeholder="先生からのフィードバックを入力..."></textarea></div>
+    <div class="form-group" style="margin-bottom:16px;"><label>Memo</label><textarea id="inputMemo" placeholder="自分の振り返りメモ..." style="min-height:50px;"></textarea></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button class="btn" onclick="saveEntry()">記録を保存</button>
+      <button class="btn btn-secondary" onclick="exportData()">データ書き出し</button>
+    </div>
+  </div>
+
+  <!-- ===== FEEDBACK LOG ===== -->
+  <div class="card">
+    <h3>Feedback Log</h3>
+    <div class="feedback-list" id="feedbackLog"></div>
+  </div>
+
+  <!-- ===== INSIGHTS ===== -->
+  <div class="card" style="margin-top:20px;">
+    <h3>Insights</h3>
+    <div id="insightsArea"></div>
+  </div>
+
+</div>
+
+<script>
+const LESSONS=[];for(let u=1;u<=6;u++)for(let l=1;l<=4;l++)LESSONS.push(`${u}-${l}`);
+const CONTENT_AXES=['PLOT','STORY','FACT','CORE'];
+const CONTENT_JA={PLOT:'構成・話の筋道',STORY:'物語・共感力',FACT:'事実・データ活用',CORE:'核心・伝えたい想い'};
+const DELIVERY_AXES=['声の大きさ','話す速さ','一文の長さ','フィラー','語りかけ力'];
+const ALL_RATING_AXES=['PLOT','STORY','FACT','CORE','声','流暢さ','構成力'];
+const INITIAL_CONTENT={PLOT:53,STORY:62,FACT:46,CORE:69};
+const INITIAL_DELIVERY={'声の大きさ':'A','話す速さ':'S','一文の長さ':'S','フィラー':'S','語りかけ力':'A'};
+const CHART_COLORS=['#F472A8','#B8C8E2','#E45A93','#8EAED4','#C77DBA','#D4A0C0','#A8BFD8'];
+
+let entries=JSON.parse(localStorage.getItem('speech_entries_v4')||'[]');
+if(entries.length===0){
+  entries=[
+    {lesson:'1-1',date:'2026-03-11',ratings:{PLOT:3,STORY:4,FACT:2,CORE:4,'声':4,'流暢さ':3,'構成力':3},feedback:'初回診断レッスン。Content Skill 偏差値58。Delivery Skill A+。声の強さとストーリーテリングが強み。FACTの活用とPLOTの構成力が課題。',memo:'初めてのレッスン。自分の強みと弱みが数値化されてわかりやすかった。',tags:['強み: STORY','強み: 声','課題: FACT','課題: PLOT']},
+    {lesson:'1-2',date:'2026-03-18',ratings:{PLOT:3,STORY:4,FACT:2,CORE:3,'声':4,'流暢さ':2,'構成力':3},feedback:'<b>①話し方の引き出しを増やす</b>\n平さんはすでにハキハキと言葉を粒立てて話すことができており、それが強みです。今後は対象者やシチュエーションに合わせて話し方をコントロールできる力をつけていきましょう。まずは滑らかに弧を描くように、言葉がブツっと切れないで話せるように練習をしましょう！\n\n<b>②目的から逆算する習慣</b>\n常に話す目的を考え、その目的の達成にはどんなファクト、ストーリーが必要か逆算する考え方を持ってみましょう。目的の達成のために返ってノイズになってしまう情報は勇気を持って割愛してみてください。',memo:'なめらかに読む＝流暢さが新しい課題。ファクト選びは「聞き手の目的」から逆算する必要がある。',tags:['強み: ハキハキ','課題: 流暢さ','課題: 目的から逆算','課題: FACT選び']}
+  ];
+  localStorage.setItem('speech_entries_v4',JSON.stringify(entries));
+}
+
+function ppgHTML(){
+  return `<div class="ppg">
+    <div class="ppg-pigtail l"><div class="ppg-pigtail-ball"></div><div class="ppg-pigtail-stem"></div></div>
+    <div class="ppg-pigtail r"><div class="ppg-pigtail-ball"></div><div class="ppg-pigtail-stem"></div></div>
+    <div class="ppg-hair-top"></div>
+    <div class="ppg-tie l"></div><div class="ppg-tie r"></div>
+    <div class="ppg-head">
+      <div class="ppg-eye l"><div class="ppg-iris"><div class="ppg-pupil"></div></div></div>
+      <div class="ppg-eye r"><div class="ppg-iris"><div class="ppg-pupil"></div></div></div>
+      <div class="ppg-blush l"></div><div class="ppg-blush r"></div>
+      <div class="ppg-mouth"></div>
+    </div>
+    <div class="ppg-body"><div class="ppg-stripe"></div></div>
+  </div>`;
+}
+
+function renderLessonTrack(){
+  const t=document.getElementById('lessonTrack');t.innerHTML='';
+  const done=entries.map(e=>e.lesson),cur=entries.length>0?entries[entries.length-1].lesson:'1-1';let cu='';
+  LESSONS.forEach(l=>{const u=l.split('-')[0];if(u!==cu){const s=document.createElement('span');s.className='unit-label';s.textContent=`U${u}`;t.appendChild(s);cu=u;}
+  const d=document.createElement('div');d.className='lesson-dot';d.textContent=l;d.classList.add(done.includes(l)?(l===cur?'current':'completed'):'future');d.onclick=()=>showLessonDetail(l);t.appendChild(d);});
+  document.getElementById('progressBadge').textContent=`Lesson ${entries.length} / ${LESSONS.length}`;
+}
+
+function renderContentScores(){
+  const c=document.getElementById('contentScores');c.innerHTML='';
+  CONTENT_AXES.forEach(a=>{const i=document.createElement('div');i.className='score-item';const t=getTrend(a);i.innerHTML=`<div class="label">${a}</div><div class="label-ja">${CONTENT_JA[a]}</div><div class="value">${INITIAL_CONTENT[a]}</div><div class="change ${t.dir}">${t.text}</div>`;c.appendChild(i);});
+}
+
+function renderDeliveryScores(){
+  const c=document.getElementById('deliveryScores');c.innerHTML='';
+  DELIVERY_AXES.forEach(a=>{const g=INITIAL_DELIVERY[a];const i=document.createElement('div');i.className='delivery-item';i.innerHTML=`<div class="label">${a}</div><div class="grade ${g==='S'?'grade-s':'grade-a'}">${g}</div>`;c.appendChild(i);});
+}
+
+function getTrend(a){
+  const r=entries.filter(e=>e.ratings&&e.ratings[a]!==undefined).map(e=>e.ratings[a]);
+  if(r.length<2)return{dir:'neutral',text:'—'};const d=r[r.length-1]-r[r.length-2];
+  if(d>0)return{dir:'up',text:`▲ ${r[r.length-1]}/5`};if(d<0)return{dir:'down',text:`▼ ${r[r.length-1]}/5`};return{dir:'neutral',text:`→ ${r[r.length-1]}/5`};
+}
+
+let radarChart,radarMode='content';
+function createRadarChart(){
+  radarChart=new Chart(document.getElementById('radarChart').getContext('2d'),{type:'radar',data:getRadarData(),options:{responsive:true,maintainAspectRatio:true,scales:{r:{min:0,max:5,ticks:{stepSize:1,font:{size:10,family:'Poppins'},backdropColor:'transparent',color:'#9A8490'},pointLabels:{font:{size:11,weight:'600',family:'Zen Maru Gothic'},color:'#6B5060'},grid:{color:'rgba(244,114,168,0.1)'},angleLines:{color:'rgba(244,114,168,0.1)'}}},plugins:{legend:{position:'bottom',labels:{font:{size:11,family:'Poppins'},padding:12,color:'#6B5060'}}}}});
+}
+function getRadarData(){
+  const lb=radarMode==='content'?['PLOT','STORY','FACT','CORE']:['声','流暢さ','構成力','FACT','STORY'];
+  return{labels:lb,datasets:entries.map((e,i)=>{const is=i===entries.length-1;return{label:`Lesson ${e.lesson}`,data:lb.map(l=>e.ratings[l]||0),borderColor:is?'#F472A8':'#B8C8E2',backgroundColor:is?'rgba(244,114,168,0.12)':'transparent',borderWidth:is?2.5:1.5,pointRadius:is?5:3,pointBackgroundColor:is?'#F472A8':'#B8C8E2'};})};
+}
+function switchRadar(m){radarMode=m;document.querySelectorAll('.tabs .tab').forEach(t=>t.classList.remove('active'));event.target.classList.add('active');radarChart.data=getRadarData();radarChart.update();}
+
+
+function renderFeedbackLog(){
+  const c=document.getElementById('feedbackLog');c.innerHTML='';
+  [...entries].reverse().forEach(e=>{const d=document.createElement('div');d.className='feedback-entry';
+  const tags=(e.tags||[]).map(t=>`<span class="tag ${t.startsWith('課題')?'issue':''}">${t}</span>`).join('');
+  d.innerHTML=`<span class="lesson-tag">${e.lesson}</span><span class="date">${e.date}</span><div class="content">${e.feedback.replace(/\n/g,'<br>')}</div>${e.memo?`<div class="content" style="color:var(--text-light);font-style:italic;margin-top:4px;">${e.memo}</div>`:''}<div class="tags">${tags}</div>`;
+  c.appendChild(d);});
+}
+
+function renderFormInputs(){
+  const s=document.getElementById('inputLesson');s.innerHTML='';
+  LESSONS.forEach(l=>{const o=document.createElement('option');o.value=l;o.textContent=`Lesson ${l}`;s.appendChild(o);});
+  const done=new Set(entries.map(e=>e.lesson));const next=LESSONS.find(l=>!done.has(l));if(next)s.value=next;
+  const rc=document.getElementById('ratingInputs');rc.innerHTML='';
+  ALL_RATING_AXES.forEach(a=>{const i=document.createElement('div');i.className='rating-item';i.innerHTML=`<label>${a}</label><select data-axis="${a}"><option value="">-</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select>`;rc.appendChild(i);});
+}
+
+function saveEntry(){
+  const lesson=document.getElementById('inputLesson').value,date=document.getElementById('inputDate').value;
+  let feedback=document.getElementById('inputFeedback').value;const memo=document.getElementById('inputMemo').value;
+  if(!feedback){alert('フィードバックを入力してください');return;}
+  // Auto-bold ① ② etc.
+  feedback=feedback.replace(/(①[^\n]*)/g,'<b>$1</b>').replace(/(②[^\n]*)/g,'<b>$1</b>').replace(/(③[^\n]*)/g,'<b>$1</b>');
+  const ratings={};document.querySelectorAll('#ratingInputs select').forEach(s=>{if(s.value)ratings[s.dataset.axis]=parseInt(s.value);});
+  const tags=[],tx=feedback+' '+memo;
+  if(/FACT|ファクト/i.test(tx))tags.push('課題: FACT');
+  if(/STORY|ストーリー/i.test(tx))tags.push('テーマ: STORY');
+  if(/一文.*長|長い/i.test(tx))tags.push('課題: 一文の長さ');
+  if(/なめらか|流暢|ぶつ切り|滑らか|ブツ/i.test(tx))tags.push('課題: 流暢さ');
+  if(/目的.*逆算|目的意識|聞き手/i.test(tx))tags.push('課題: 目的から逆算');
+  if(/腹式|呼吸/i.test(tx))tags.push('OK: 腹式呼吸');
+  if(/声/i.test(tx))tags.push('テーマ: 声');
+  if(/ハキハキ|粒立て/i.test(tx))tags.push('強み: ハキハキ');
+  const idx=entries.findIndex(e=>e.lesson===lesson);const entry={lesson,date,ratings,feedback,memo,tags};
+  if(idx>=0)entries[idx]=entry;else{entries.push(entry);entries.sort((a,b)=>LESSONS.indexOf(a.lesson)-LESSONS.indexOf(b.lesson));}
+  localStorage.setItem('speech_entries_v4',JSON.stringify(entries));refreshAll();
+  document.getElementById('inputFeedback').value='';document.getElementById('inputMemo').value='';
+  document.querySelectorAll('#ratingInputs select').forEach(s=>s.value='');
+}
+
+function exportData(){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(entries,null,2)],{type:'application/json'}));a.download='speech_lesson_data.json';a.click();}
+
+function renderInsights(){
+  const c=document.getElementById('insightsArea');
+  if(!entries.length){c.innerHTML='<div class="insight-simple">レッスンデータが蓄積されるとインサイトが表示されます。</div>';return;}
+  const latest=entries[entries.length-1];const strengths=[],challenges=[];
+  if(latest.ratings)Object.entries(latest.ratings).forEach(([k,v])=>{if(v>=4)strengths.push(k);if(v<=2)challenges.push(k);});
+
+  let focus='';
+  if(strengths.length>0&&challenges.length>0){
+    focus=`りーちゃん、${strengths.join('と')}が光ってるよ！自己評価4以上で安定してて、これは自信持っていいポイント。`;
+    focus+=`<br><br>一方で${challenges.join('と')}はまだ伸びしろゾーン。`;
+    if(challenges.includes('FACT'))focus+='FACTは「聞き手にどうなってほしいか」から逆算して、目的に合ったデータや事例を選ぶ練習をしていこう。三原則の①「目的を明確にする」と②「対象者を分析する」を意識してみてね。';
+    if(challenges.includes('流暢さ'))focus+='<br>流暢さは「滑らかに弧を描くように」話す練習を続けていこう！ハキハキ話せる強みがあるから、そこに"なめらかさ"の引き出しが加わったら表現の幅がぐっと広がるよ。';
+    focus+=`<br><br>Content Skillの偏差値は58 → <strong>Goal 70</strong>まであと12ポイント！一歩一歩、着実にいこうね。`;
+  }else if(strengths.length>0){focus=`りーちゃん、${strengths.join('・')}が強みとして安定してるよ。この調子で次の課題にもチャレンジしていこう！`;}
+  else if(challenges.length>0){focus=`りーちゃん、${challenges.join('・')}が重点改善ポイントだね。レッスンのフィードバックを意識しながら、一つずつクリアしていこう！`;}
+
+  const allTags=entries.flatMap(e=>e.tags||[]);const tagCounts={};
+  allTags.forEach(t=>{tagCounts[t]=(tagCounts[t]||0)+1;});
+  const recurring=Object.entries(tagCounts).filter(([,c])=>c>=2).sort((a,b)=>b[1]-a[1]);
+
+  let html=`<div class="insight-wrap">${ppgHTML()}<div class="insight-bubble"><div class="bubble-title">現在のフォーカスポイント</div>${focus}</div></div>`;
+
+  if(recurring.length>0){
+    let rt='レッスンを通じて繰り返し出てきてるテーマだよ！<br><br>';
+    recurring.forEach(([tag,count])=>{
+      rt+=`<strong>${tag}</strong>（${count}回登場）`;
+      if(tag.includes('FACT'))rt+=' — データや具体例の選び方がカギ！';
+      else if(tag.includes('流暢'))rt+=' — なめらかに話す練習を継続中！';
+      else if(tag.includes('逆算'))rt+=' — 「相手にどうなってほしいか」から考える習慣づけ。';
+      else if(tag.includes('ハキハキ'))rt+=' — りーちゃんの生まれ持った強み！';
+      rt+='<br>';
+    });
+    html+=`<div class="insight-wrap" style="margin-top:16px;">${ppgHTML()}<div class="insight-bubble"><div class="bubble-title">繰り返し出ているテーマ</div>${rt}</div></div>`;
+  }
+
+  const progress=((entries.length/LESSONS.length)*100).toFixed(0);
+  html+=`<div class="insight-simple" style="margin-top:16px;"><div class="title">進捗サマリー</div>全${LESSONS.length}レッスン中 <strong>${entries.length}レッスン</strong>完了（${progress}%）。${entries.length<5?'まだ序盤！基礎を丁寧に固めていく時期だよ。':entries.length<12?'中盤に差し掛かっています。':''}</div>`;
+  c.innerHTML=html;
+}
+
+function showLessonDetail(l){const e=entries.find(x=>x.lesson===l);if(!e)return;const el=document.getElementById('feedbackLog');el.scrollTop=0;
+el.querySelectorAll('.feedback-entry').forEach(x=>{if(x.querySelector('.lesson-tag').textContent.includes(l)){x.style.background='rgba(244,114,168,0.08)';setTimeout(()=>x.style.background='transparent',2000);}});}
+
+function refreshAll(){renderLessonTrack();renderContentScores();renderDeliveryScores();renderFeedbackLog();renderInsights();renderFormInputs();if(radarChart){radarChart.data=getRadarData();radarChart.update();}}
+
+document.addEventListener('DOMContentLoaded',()=>{renderLessonTrack();renderContentScores();renderDeliveryScores();createRadarChart();renderFeedbackLog();renderInsights();renderFormInputs();});
+</script>
+</body>
+</html>
