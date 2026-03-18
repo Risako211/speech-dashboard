@@ -395,7 +395,7 @@ function renderFeedbackLog(){
   const c=document.getElementById('feedbackLog');c.innerHTML='';
   [...entries].reverse().forEach(e=>{const d=document.createElement('div');d.className='feedback-entry';
   const tags=(e.tags||[]).map(t=>`<span class="tag ${t.startsWith('課題')?'issue':''}">${t}</span>`).join('');
-  d.innerHTML=`<span class="lesson-tag">${e.lesson}</span><span class="date">${e.date}</span><div class="content">${e.feedback.replace(/\n/g,'<br>')}</div>${e.memo?`<div class="content" style="color:var(--text-light);font-style:italic;margin-top:4px;">${e.memo}</div>`:''}<div class="tags">${tags}</div>`;
+  d.innerHTML=`<span class="lesson-tag">${e.lesson}</span><span class="date">${e.date}</span><div class="content">${e.feedback.replace(/\n/g,'<br>')}</div>${e.memo?`<div class="content" style="color:var(--text-light);font-style:italic;margin-top:4px;">${e.memo.replace(/\\n/g,'<br>').replace(/\n/g,'<br>')}</div>`:''}<div class="tags">${tags}</div>`;
   c.appendChild(d);});
 }
 
